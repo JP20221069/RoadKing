@@ -1,0 +1,90 @@
+/* MAIN DIV STYLES */
+.rk_background{
+    color:white;
+
+}
+
+.rk_header{
+    /*border:5px solid red;*/
+}
+
+.rk_footer{
+
+    /*border: 5px solid red;*/
+
+
+}
+
+.rk_maincontent
+{
+    /*border: 5px solid yellow;
+    padding:0px;*/
+
+}
+
+.rk_sidecontent
+{
+    /*border: 5px solid cyan;*/
+    
+}
+
+.navbar-inner
+{
+    background-image: url('../pictures/navbackground2.jpg');
+    background-size:contain;
+}
+/* BORDERS & DIVS */
+/*.rk_border_collapse
+{
+    margin-top:-5px;
+    margin-left: -5px;
+}*/
+.rk_border_collapse_top
+{
+    margin-top:-5px;
+}
+.rk_border_collapse_r
+{
+    margin-left: -5px;
+}
+.rk_border_collapse_l
+{
+    margin-right: -5px;
+}
+.rk_border_collapse_mid
+{
+    margin-left: -5px;
+    margin-right: -5px;
+}
+/* NAV BAR */ 
+.navbar .navbar-nav .nav-link{
+    color: #fff;
+    font-family:Tahoma;
+    font-weight:bold;
+}
+
+.navbar .navbar-nav .nav-link:hover {
+  background-color: rgb(255,255,255,0.5);
+  color: black;
+}
+.rk_brand :hover {
+    color: white;
+}
+.navbar .nav-item .dropdown-menu{ display: none; }
+.navbar .nav-item:hover .dropdown-menu{ display: block; }
+.navbar .nav-item .dropdown-menu{ margin-top:0; }
+  
+a.dropdown-item{
+
+    font-family:Tahoma;
+    font-weight:bold;
+  }
+.dropdown-menu {
+    border-radius:0;
+    background-color:lightslategrey;
+
+}
+.rk_brand{
+    font-family: brush-script-std;
+    color:white;
+}
