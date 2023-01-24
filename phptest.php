@@ -2,13 +2,16 @@
 <html>
 
 <head>
-
+<link rel="stylesheet" href="css/style.css"/>
 </head>
 
 <body>
     <?php
     include_once("php/Classes.php");
-    $q= DataManager::getAllUsers($mysqli);
+    DataManager::getAllUsersAsDT($mysqli);
+    echo "<br/>";
+    DataManager::getAllUsersAsObjArray($mysqli);
+
 
     ?>
     <!-- <table>

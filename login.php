@@ -7,13 +7,26 @@
     <link rel="stylesheet" href="css/bootstrap.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://use.typekit.net/qtr6lzm.css">
+    <script src="js/validacija.js" type="text/javascript"></script>
 </head>
 
 <body>
+    <?php
+    include_once "php/Classes.php";
+    Session::tryinit();
+    if(Session::check("LOGGED_IN"))
+    {
+        Graphics::set_invis("MENU_LOGIN");
+        Graphics::set_invis("MENU_SIGNUP");
+        Graphics::set_vis("MENU_LOGOFF");
+    }
+    else
+    {
+        Graphics::set_invis("MENU_LOGOFF");
+    } ?>
     <div class="row">
         <div id="header" class="col-12 rk_header">
             <img src="pictures/RoadKing banner3.png"/>
-           
         </div>
 
 
@@ -37,7 +50,7 @@
                                 <a class="nav-link active" href="index.php">Our services</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link active" href="index.php">Rental</a>
+                                <a class="nav-link active" href="rental.php">Rental</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link active" href="index.php">About us</a>
@@ -45,8 +58,9 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Account</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Log in</a></li>
-                                    <li><a class="dropdown-item" href="#">Sign up</a></li>
+                                    <li id="MENU_LOGIN"><a class="dropdown-item" href="#">Log in</a></li>
+                                    <li id="MENU_SIGNUP"><a class="dropdown-item" href="#">Sign up</a></li>
+                                    <li id="MENU_LOGOFF" style="display:none;"><a class="dropdown-item" href="logoff.php">Log off</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -62,14 +76,38 @@
             <br />
             <div class="w-50 p-3 ">
             <form id="FORM_LOGON" action="" method="post">
-
-                Username: <input id="FIELD_USERNAME" class="form-control" type="text"/>
-                <br/>
-                Password: <input id="FIELD_PASSWORD" class="form-control" type="password"/>
-                <br/>
-                <input type="submit" class="btn btn-danger" value="Log in"/> 
+                <table>
+                    <tbody>
+                <tr><td>Username:</td><td><input id="FIELD_USERNAME" name="USERNAME" class="form-control" type="text"/></td><td><p id="LABEL_USERNAME_ERROR" class="rk_error" style="display:none">*</p></td></tr>
+                <tr><td>Password:</td><td> <input id="FIELD_PASSWORD" name="PASSWORD" class="form-control" type="password"/></td><td><p id="LABEL_PASSWORD_ERROR" class="rk_error" style="display:none">*</p></td></tr>
+                <tr><td></td><td class="login_form_table_btntd"><input type="button" onclick="frm_logon_Validate()" class="btn btn-danger" value="Log in"/></td><td></td></tr> 
+                    </tbody>
+                </table>
             </form>
+            <p id="LABEL_ERROR" class="rk_error" style="display:none"></p>
+            <p id="LABEL_INFO" style="display:none"></p>
             </div>
+            <?php
+            if(isset($_POST["USERNAME"]) and isset($_POST["PASSWORD"]))
+            {
+               $valid= DataManager::checkUserPass($_POST["USERNAME"],$_POST["PASSWORD"],$mysqli);
+               if($valid==true)
+               {
+                    DataManager::setUserLogged(DataManager::getUserUIDByName($_POST["USERNAME"],$mysqli), true,$mysqli);
+                    $usr = DataManager::getUserByName($_POST["USERNAME"],$mysqli);
+                    Session::set_current("CURRENT_USER",$usr);
+                    Session::set_current("LOGGED_IN", true);
+                    Graphics::display_report("Welcome, " . Session::get_current("CURRENT_USER")->username, "LABEL_INFO");
+                    Graphics::set_invis("MENU_LOGIN");
+                    Graphics::set_invis("MENU_SIGNUP");
+                    Graphics::set_vis("MENU_LOGOFF");
+                }
+               else
+               {
+                Graphics::display_report("Wrong username and/or password!", "LABEL_ERROR");
+               }
+            }
+            ?>
         </div>
         <div id="side_r" class="d-none d-lg-block col-lg-2 rk_sidecontent rk_border_collapse_top">
             <br />

@@ -88,3 +88,44 @@ a.dropdown-item{
     font-family: brush-script-std;
     color:white;
 }
+
+.basic_table
+{
+    border:1px solid black;
+    border-collapse:collapse;
+}
+.basic_table td
+{
+    border:1px solid black;
+}
+
+.basic_table th
+{
+    border:1px solid black;
+}
+
+.rk_error{
+    color:firebrick;
+    font-family:'Courier New', Courier, monospace;
+    font-weight:bold;
+}
+
+.login_form_table{
+
+}
+
+.login_form_table_btntd
+{
+    text-align: center;
+}
+
+.rk_goodbye
+{
+    text-align:center;
+}
+
+.rk_info{
+    color:cyan;
+    font-family:'Courier New', Courier, monospace;
+    font-weight:bold;
+}

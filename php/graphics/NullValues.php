@@ -3,8 +3,8 @@
     enum NullValues
     {
         case Blanks;
-        case NonNullOnly;
         case NullText;
+        case NullTextSmall;
         case NA;
         case Default;
     }

@@ -7,7 +7,11 @@
     include_once "data/DataManager.php" ;
     include_once "data/DataTable.php" ;
     //GRAPH
+    include_once "graphics/HeaderOptions.php";
+    include_once "graphics/NullValues.php";
     include_once "graphics/Graphics.php" ;
     //MODEL
     include_once "model/User.php" ;
+    include_once "model/Roles.php";
+include_once "model/Vehicle.php";
 ?>

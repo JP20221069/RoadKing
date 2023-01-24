@@ -4,7 +4,6 @@ class DataTable
 {
     public $Columns;
     public $Rows;
-
     public $Empty=true;
 
     public function __construct($Columns=null,$Rows=null)
