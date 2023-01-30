@@ -67,7 +67,11 @@
   background-color: rgb(255,255,255,0.5);
   color: black;
 }
-.rk_brand :hover {
+.navbar-brand .rk_brand :hover {
+    color: white;
+}
+#brand:hover
+{
     color: white;
 }
 .navbar .nav-item .dropdown-menu{ display: none; }
@@ -129,3 +133,7 @@ a.dropdown-item{
     font-family:'Courier New', Courier, monospace;
     font-weight:bold;
 }
+.center {
+    margin-left: auto;
+    margin-right: auto;
+  }

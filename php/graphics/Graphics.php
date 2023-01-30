@@ -238,11 +238,16 @@ class Graphics
         
     }
 
-    public static function display_report($reporttext,$label_id)
+    public static function display_report($reporttext,$label_id,$class=null)
     {
         $var= "<script type=\"text/javascript\">document.getElementById(\"" . $label_id . "\").innerText=\"" . $reporttext . "\";     document.getElementById(\"".$label_id."\").setAttribute(\"style\",\"\");</script>";
+        if($class!=null)
+        {
+            $var = $var . "<script type=\"text/javascript\">document.getElementById(\"" . $label_id . "\").setAttribute(\"class\",\"" . $class . "\");</script>";
+        }
         echo $var;
     }
+    
 
     public static function set_vis($elementid)
     {
@@ -275,7 +280,7 @@ class Graphics
                 echo'                <h5 class="card-title"></h5>';
                 echo'                <p class="card-text">'.$vehs[$array_count]->description.' </p>';
                 echo'                <a href="" target="" class="btn btn-primary">More Information</a>';
-                echo'                <a href="" target="" class="btn btn-primary">Rent</a>';
+                echo'                <a href="rentconfirm.php?v='.$vehs[$array_count]->id.'" target="" class="btn btn-primary">Rent</a>';
                 echo'            </div>';
                 echo'        </div>';
                 echo '    </div>';
@@ -285,6 +290,107 @@ class Graphics
         } 
         echo '</div>';
     }
+
+    public static function generatevdetails(Vehicle $v)
+    {
+        echo '<img src="'.$v->imgpath.'" class="rounded mx-auto d-block" alt="Vehicle">';
+        echo '<h1>'.$v->make.' '.$v->model.'</h1>';
+    }
+
+    public static function alertBox($text)
+    {
+        echo '<script type="text/javascript"> window.alert("' . $text . '");</script>';
+    }
+
+    public static function generateMenu()
+    {
+
+        $usr = new User();
+        $li = false;
+        $li = Session::try_get("LOGGED_IN");
+        $usr = Session::try_get("CURRENT_USER");
+        echo '    <div class="row">';
+        echo '    <nav class="navbar navbar-expand-lg navbar-inner">';
+        echo '                <div class="container-fluid">';
+        echo '                    <a id="brand" class="navbar-brand rk_brand">Welcome to Road King!</a>';
+        echo '                    <button class=" navbar-toggler navbar-dark " type="button" data-bs-toggle="collapse" data-bs-target="#main_nav" aria-controls="main_nav" aria-expanded="false">';
+        echo '                        <span class="navbar-toggler-icon"></span>';
+        echo '                    </button>';
+        echo '                    <div class="collapse navbar-collapse " id="main_nav">';
+        echo '                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">';
+        echo '                            <li class="nav-item">';
+        echo '                                <a class="nav-link active rk_link" href="index.php">Home</a>';
+        echo '                            </li>';
+        echo '                            <li class="nav-item">';
+        echo '                                <a class="nav-link active" href="index.php">Our services</a>';
+        echo '                            </li>';
+        echo '                            <li class="nav-item">';
+        echo '                                <a class="nav-link active" href="rental.php">Rental</a>';
+        echo '                            </li>';
+        echo '                            <li class="nav-item">';
+        echo '                                <a class="nav-link active" href="index.php">About us</a>';
+        echo '                            </li>';
+        echo '                            <li class="nav-item dropdown">';
+        echo '                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Account</a>';
+        echo '                                <ul class="dropdown-menu">';
+        if ($li)
+        {
+            
+            echo '                                    <li id="MENU_LOGOFF"><a class="dropdown-item" href="logoff.php">Log off</a></li>';
+        }
+        else
+        {
+            echo '                                    <li id="MENU_LOGIN"><a class="dropdown-item" href="login.php">Log in</a></li>';
+            echo '                                    <li id="MENU_SIGNUP"><a class="dropdown-item" href="signup.php">Sign up</a></li>';
+        }
+        echo '                                </ul>';
+        echo '                            </li>';
+
+        if ($li)
+        {
+            if ($usr->role == Roles::Moderator || $usr->role == Roles::Administrator)
+            {
+                echo '                            <li id="MENU_MODTOOLS" class="nav-item dropdown">';
+                echo '                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Moderator tools</a>';
+                echo '                                <ul class="dropdown-menu">';
+                echo '                                    <li><a class="dropdown-item" href="review.php">Review requests</a></li>';
+                echo '                                </ul>';
+                echo '                            </li>';
+            }
+        }
+        if ($li)
+        {
+            if ($usr->role == Roles::Administrator)
+            {
+                echo '                            <li id="MENU_ADMINTOOLS" class="nav-item dropdown">';
+                echo '                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Administrator tools</a>';
+                echo '                                <ul class="dropdown-menu">';
+                echo '                                    <li><a class="dropdown-item" href="log.php">Review log</a></li>';
+                echo '                                </ul>';
+                echo '                            </li>';
+            }
+        }
+        echo '                        </ul>';
+        echo '                    </div>';
+        echo '                </div>';
+        echo '            </nav>';
+        echo '    </div>';
+    }
+
+    public static function generateRequestReviewPanel(DataTable $dt,$table_attr="")
+    {
+        echo '<form id="FORM_RQRVW" action="" method="POST">';
+        echo '<table ' . $table_attr . '>';
+        echo '<tr><th>Request ID</th><th>User ID</th><th>User name</th><th>Vehicle ID</th><th>Manufacturer</th><th>Model</th><th>Start Date</th><th>End Date</th><th>Approved</th><th>Allow</th><th>Deny</th>';
+        $objrows = $dt->Rows;
+        foreach($objrows as $r)
+        {
+            echo '<tr><td>' . $r["ID"] . '</td><td>' . $r["USER_ID"] . '</td><td>' . $r["USER_NAME"] . '</td><td>' . $r["VEHICLE_ID"] . '</td><td>' . $r["MANUFACTURERNAME"] . '</td><td>' . $r["MODEL"] . '</td><td>' . $r["START_DATE"] . '</td><td>' . $r["END_DATE"] . '</td><td>' . $r["APPROVED"] . '</td><td><button type="submit" name="allow" value="' . $r["ID"] . '">Allow</button></td><td><button type="submit" name="deny" value="' . $r["ID"] . '">Deny</button></td></tr>';
+        }
+        echo '</table>';
+        echo '</form>';
+    }
+
 }
 
 ?>

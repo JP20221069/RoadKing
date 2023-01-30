@@ -31,12 +31,14 @@
         <div id="main_content" class="col-12 col-lg-8 d-flex justify-content-center rk_maincontent rk_border_collapse_mid rk_border_collapse_top">
             <br />
             <div class="w-50 p-3 ">
-            <form id="FORM_LOGON" action="" method="post">
+            <form id="FORM_SIGNUP" action="" method="post">
                 <table>
                     <tbody>
                 <tr><td>Username:</td><td><input id="FIELD_USERNAME" name="USERNAME" class="form-control" type="text"/></td><td><p id="LABEL_USERNAME_ERROR" class="rk_error" style="display:none">*</p></td></tr>
                 <tr><td>Password:</td><td> <input id="FIELD_PASSWORD" name="PASSWORD" class="form-control" type="password"/></td><td><p id="LABEL_PASSWORD_ERROR" class="rk_error" style="display:none">*</p></td></tr>
-                <tr><td></td><td class="login_form_table_btntd"><input type="button" onclick="frm_logon_Validate()" class="btn btn-danger" value="Log in"/></td><td></td></tr> 
+                <tr><td>Repeat password:</td><td> <input id="FIELD_RPASSWORD" name="PASSWORD" class="form-control" type="password"/></td><td><p id="LABEL_RPASSWORD_ERROR" class="rk_error" style="display:none">*</p></td></tr>
+                <tr><td>E-mail:</td><td> <input id="FIELD_EMAIL" name="EMAIL" class="form-control" type="text"/></td><td><p id="LABEL_EMAIL_ERROR" class="rk_error" style="display:none">*</p></td></tr>
+                <tr><td></td><td class="login_form_table_btntd"><input type="button" onclick="frm_signup_Validate()" class="btn btn-danger" value="Sign up"/></td><td></td></tr> 
                     </tbody>
                 </table>
             </form>
@@ -44,21 +46,23 @@
             <p id="LABEL_INFO" style="display:none"></p>
             </div>
             <?php
-            if(isset($_POST["USERNAME"]) and isset($_POST["PASSWORD"]))
+            if(isset($_POST["USERNAME"]) and isset($_POST["PASSWORD"]) and isset($_POST["EMAIL"]))
             {
-               $valid= DataManager::checkUserPass($_POST["USERNAME"],$_POST["PASSWORD"],$mysqli);
-               if($valid==true)
+                $uname = $_POST["USERNAME"];
+                $email = $_POST["EMAIL"];
+                $pword = $_POST["PASSWORD"];
+               if(DataManager::checkUserOrEmailExists($uname,$email,$mysqli))
                {
-                    DataManager::setUserLogged(DataManager::getUserUIDByName($_POST["USERNAME"],$mysqli), true,$mysqli);
-                    $usr = DataManager::getUserByName($_POST["USERNAME"],$mysqli);
-                    Session::set_current("CURRENT_USER",$usr);
-                    Session::set_current("LOGGED_IN", true);
-                    Graphics::display_report("Welcome, " . Session::get_current("CURRENT_USER")->username, "LABEL_INFO");
-                    DataManager::insertLog($usr, "Logged in.", $mysqli);
-                }
+                    Graphics::display_report("Username or Email already registered!", "LABEL_ERROR");
+               }
                else
                {
-                Graphics::display_report("Wrong username and/or password!", "LABEL_ERROR");
+                    $usr = new User($uname, $pword, $email, Roles::User);
+                    DataManager::insertUser($usr, $mysqli);
+                    $usr= DataManager::getUserByName($uname,$mysqli);
+                    DataManager::insertLog($usr, "Registered.", $mysqli);
+                    Graphics::display_report("Successfully registered! You may now log in!", "LABEL_INFO");
+
                }
             }
             ?>

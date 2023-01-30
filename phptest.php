@@ -6,20 +6,22 @@
 </head>
 
 <body>
-    <?php
-    include_once("php/Classes.php");
-    DataManager::getAllUsersAsDT($mysqli);
-    echo "<br/>";
-    DataManager::getAllUsersAsObjArray($mysqli);
-
-
+    <form id="test" action="" method="POST">
+        <button type="submit" name="test1" value="Value test 1">Press for test 1</button>
+        <br/>
+        <button type="submit" name="test2" value="Value test 2">Press for test 2</button>
+    </form>
+    <?php 
+            if(isset($_POST["test1"]))
+            {
+            echo $_POST["test1"];
+            }
+            if(isset($_POST["test2"]))
+            {
+            echo $_POST["test2"];
+            }
+                
     ?>
-    <!-- <table>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-        </tr>
-    </table> -->
 </body>
 
 </html>

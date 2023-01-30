@@ -93,6 +93,54 @@ class DataManager
             }
         }
     }
+    static function checkUserOrEmailExists($username,$email, $mysqli)
+    {
+        $comm = "SELECT COUNT(*) AS CNT FROM USERS WHERE USER_NAME='" . $username . "' OR EMAIL='" . $email . "';";
+        $q = $mysqli->query($comm);
+        if ($q->num_rows == 0)
+        {
+            return null;
+        }
+        else
+        {
+            while ($row = $q->fetch_assoc())
+            {
+                if(intval($row["CNT"])>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+    static function getVehicleByID($id, $mysqli)
+    {
+        $comm = "SELECT VEHICLES.ID,MODEL,MANUFACTURERS.MANUFACTURERNAME AS MAKE ,VEHICLE_TYPE.VEHTYPE AS VTYPE,DESCRIPTION,IMAGE_PATH FROM VEHICLES INNER JOIN VEHICLE_TYPE ON VEHICLES.VTYPE=VEHICLE_TYPE.ID INNER JOIN MANUFACTURERS ON VEHICLES.MAKE=MANUFACTURERS.ID WHERE VEHICLES.ID=".$id.";";
+        $q = $mysqli->query($comm);
+        if ($q->num_rows == 0)
+        {
+            return null;
+        }
+        else
+        {
+            while ($row = $q->fetch_assoc())
+            {
+                $v = new Vehicle();
+                $v->id = $row["ID"];
+                $v->make = $row["MAKE"];
+                $v->model = $row["MODEL"];
+                $v->type = $row["VTYPE"];
+                $v->description = $row["DESCRIPTION"];
+                $v->imgpath = $row["IMAGE_PATH"];
+
+                return $v;
+            }
+        }
+    }
     //get multiple objects
     static function getAllUsersAsObjArray($mysqli)
     {
@@ -147,6 +195,7 @@ class DataManager
             while ($row = $q->fetch_assoc())
             {
                 $v = new Vehicle();
+                $v->id = $row["ID"];
                 $v->make = $row["MAKE"];
                 $v->model = $row["MODEL"];
                 $v->type = $row["VTYPE"];
@@ -158,6 +207,39 @@ class DataManager
         }
         return $vehs;
     }
+
+    static function getLogAsDT($mysqli)
+    {
+        $dt = new DataTable();
+        $comm = "SELECT * FROM log;";
+        $q = $mysqli->query($comm);
+        if ($q->num_rows == 0)
+        {
+            return null;
+        }
+        else
+        {
+            $dt = DataTable::fromQuery($q);
+        }
+        return $dt;
+    }
+    static function getRequestsModifiedAsDT($mysqli)
+    {
+        $dt = new DataTable();
+        $comm = "SELECT `rental_request`.`ID`,`rental_request`.`USER_ID`,USERS.USER_NAME,`rental_request`.`VEHICLE_ID`,MANUFACTURERS.MANUFACTURERNAME,VEHICLES.MODEL,`rental_request`.`START_DATE`,`rental_request`.`END_DATE`,`rental_request`.`APPROVED` FROM `data_roadking`.`rental_request` INNER JOIN USERS ON RENTAL_REQUEST.USER_ID=USERS.ID INNER JOIN VEHICLES ON VEHICLE_ID=VEHICLES.ID INNER JOIN MANUFACTURERS ON MANUFACTURERS.ID=VEHICLES.MAKE;";
+        $q = $mysqli->query($comm);
+        if ($q->num_rows == 0)
+        {
+            return null;
+        }
+        else
+        {
+            $dt = DataTable::fromQuery($q);
+        }
+        return $dt;
+    }
+
+
 
     //insert
     static function insertUser(User $usr,$mysqli)
@@ -172,11 +254,68 @@ class DataManager
             throw new Exception("MYSQLI error: " . $mysqli->error);
         }
     }
+
+    static function insertRequest(Request $req,$mysqli)
+    {
+        $temp = $req->approved ? '1' : '0';
+        $comm = "INSERT INTO `data_roadking`.`rental_request`(`USER_ID`,`VEHICLE_ID`,`START_DATE`,`END_DATE`,`APPROVED`) VALUES(".$req->userid.",".$req->vehicleid.",'".$req->startdate."','".$req->enddate."',".$temp.");";
+        if($q=$mysqli->query($comm))
+        {
+            return 1;
+        }
+        else
+        {
+            throw new Exception("MYSQLI error: " . $mysqli->error);
+        }
+    }
+
+    static function insertLog(User $usr,$description,$mysqli)
+    {
+        $datetime = date('d-m-y h:i:s');
+        $comm = "INSERT INTO `data_roadking`.`log` (`USER_ID`,`ACTION_DESCRIPTION`,`ACTION_TIME`) VALUES(".$usr->uid.",'".$description."','".$datetime."');"; 
+        if($q=$mysqli->query($comm))
+        {
+            return 1;
+        }
+        else
+        {
+            throw new Exception("MYSQLI error: " . $mysqli->error);
+        }
+    }
+
     //update
     static function setUserLogged($uid, $loggedin, $mysqli)
     {
         $l_i = $loggedin ? "1" : "0";
         $comm = "UPDATE USERS SET LOGGED_IN=" . $l_i . " WHERE ID=".$uid.";";
+        if($q=$mysqli->query($comm))
+        {
+            return 1;
+        }
+        else
+        {
+            throw new Exception("MYSQLI error: " . $mysqli->error);
+        }
+    }
+
+    static function setRequestApproved($id, $approved, $mysqli)
+    {
+        $ap = $approved ? "1" : "0";
+        $comm = "UPDATE RENTAL_REQUEST SET APPROVED=" . $ap . " WHERE ID=".$id.";";
+        if($q=$mysqli->query($comm))
+        {
+            return 1;
+        }
+        else
+        {
+            throw new Exception("MYSQLI error: " . $mysqli->error);
+        }
+    }
+
+    //delete
+    static function deleteUser($usr, $mysqli)
+    {
+        $comm = "DELETE FROM USERS WHERE USERS.ID=" . $usr->uid;
         if($q=$mysqli->query($comm))
         {
             return 1;

@@ -38,6 +38,19 @@ class Session
         }
     }
 
+    public static function try_get($key)
+    {
+        $chk = self::check($key);
+        if($chk)
+        {
+            return self::get_current($key);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public static function delete($key)
     {
         unset($_SESSION[$key]);
