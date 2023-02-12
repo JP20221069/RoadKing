@@ -3,13 +3,18 @@
 
 <head>
     <title>Road King RC</title>
-    <!-- DODATI FAVICON -->
+ 
     <link rel="stylesheet" href="css/bootstrap.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="https://use.typekit.net/qtr6lzm.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="js/validacija.js" type="text/javascript"></script>
     <script src="js/ajx_main.js" type="text/javascript"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="pictures/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="pictures/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="pictures/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
     
 </head>
 
