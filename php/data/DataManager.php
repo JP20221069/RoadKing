@@ -238,13 +238,27 @@ class DataManager
         }
         return $dt;
     }
-
+    static function getRequestsFromUserModifiedAsDT($uid,$mysqli)
+    {
+        $dt = new DataTable();
+        $comm = "SELECT `rental_request`.`ID`,`rental_request`.`USER_ID`,USERS.USER_NAME,`rental_request`.`VEHICLE_ID`,MANUFACTURERS.MANUFACTURERNAME,VEHICLES.MODEL,`rental_request`.`START_DATE`,`rental_request`.`END_DATE`,`rental_request`.`APPROVED` FROM `data_roadking`.`rental_request` INNER JOIN USERS ON RENTAL_REQUEST.USER_ID=USERS.ID INNER JOIN VEHICLES ON VEHICLE_ID=VEHICLES.ID INNER JOIN MANUFACTURERS ON MANUFACTURERS.ID=VEHICLES.MAKE WHERE USERS.ID=".$uid.";";
+        $q = $mysqli->query($comm);
+        if ($q->num_rows == 0)
+        {
+            return null;
+        }
+        else
+        {
+            $dt = DataTable::fromQuery($q);
+        }
+        return $dt;
+    }
 
 
     //insert
     static function insertUser(User $usr,$mysqli)
     {
-        $comm = "INSERT INTO USERS(USER_NAME,EMAIL,PASS,USER_ROLE,LOGGED_IN) VALUES(" . $usr->username. "," . $usr->e_mail . "," . $usr->password . "," . $usr->role . ",0);";
+        $comm = "INSERT INTO USERS(USER_NAME,EMAIL,PASS,USER_ROLE,LOGGED_IN) VALUES('" . $usr->username. "','" . $usr->e_mail . "','" . $usr->password . "'," . $usr->role->value . ",0);";
         if($q=$mysqli->query($comm))
         {
             return 1;

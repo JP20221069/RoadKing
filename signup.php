@@ -31,7 +31,7 @@
         <div id="main_content" class="col-12 col-lg-8 d-flex justify-content-center rk_maincontent rk_border_collapse_mid rk_border_collapse_top">
             <br />
             <div class="w-50 p-3 ">
-            <form id="FORM_SIGNUP" action="" method="post">
+            <form id="FORM_SIGNUP" action="" method="POST">
                 <table>
                     <tbody>
                 <tr><td>Username:</td><td><input id="FIELD_USERNAME" name="USERNAME" class="form-control" type="text"/></td><td><p id="LABEL_USERNAME_ERROR" class="rk_error" style="display:none">*</p></td></tr>

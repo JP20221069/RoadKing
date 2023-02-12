@@ -28,7 +28,7 @@
     <br/>
     <?php Graphics::generateMenu();
         $x=Session::try_get("CURRENT_USER");
-        if (Permission::checkHasRights($x, Roles::Administrator)==false && Permission::checkHasRights($x, Roles::Moderator)==false)
+        if (Permission::checkHasRights($x, Roles::User)==false && Permission::checkHasRights($x, Roles::Moderator)==false&& Permission::checkHasRights($x, Roles::Administrator)==false)
         {
             echo 'You do not have the required rights to view this page.';
             exit;
@@ -40,21 +40,13 @@
         <div id="main_content" class="col-12 col-lg-8 d-flex justify-content-center rk_maincontent rk_border_collapse_mid rk_border_collapse_top">
             <div class="centeredcontent">
             <br />
-            <button id="requestrefresher">Refresh</button>
+            <button id="myrequestrefresher">Refresh</button>
             <br/>
             <?php
-            $dt = DataManager::getRequestsModifiedAsDT($mysqli);
-            Graphics::generateRequestReviewPanel($dt, "id=\"TBL_RVW\" class=\"basic_table\"");
-            if(isset($_POST["allow"]))
-            {
-                DataManager::setRequestApproved($_POST["allow"], true,$mysqli);
-                echo '<p id="LABEL_ERROR" class="rk_info">Approved request ID ' . $_POST["allow"] . '</p>';
-            }
-            if(isset($_POST["deny"]))
-            {
-                DataManager::setRequestApproved($_POST["deny"], false,$mysqli);
-                echo '<p id="LABEL_ERROR" class="rk_info">Denied request ID ' . $_POST["deny"] . '</p>';
-            }
+            $x=Session::try_get("CURRENT_USER");
+            $dt = DataManager::getRequestsFromUserModifiedAsDT($x->uid,$mysqli);
+            $customcolumns = array("ID", "USER ID", "USERNAME", "VEHICLE ID", "MANUFACTURER", "MODEL", "DATE FROM", "DATE TO","APPROVED");
+            Graphics::generatetablefromDT($dt,"id=\"TBL_MRVW\" class=\"basic_table\"",HeaderOptions::Custom,Nullvalues::Default,$customcolumns);
             ?>
             <br/>
             

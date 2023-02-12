@@ -113,7 +113,7 @@ function frm_signup_Validate()
     }
     else
     {
-        document.getElementById("FORM_LOGON").submit();
+        document.getElementById("FORM_SIGNUP").submit();
 
     }
 }

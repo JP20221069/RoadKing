@@ -279,8 +279,12 @@ class Graphics
                 echo'                <h4 class="card-title">'.$vehs[$array_count]->make.' '.$vehs[$array_count]->model.'</h4>';
                 echo'                <h5 class="card-title"></h5>';
                 echo'                <p class="card-text">'.$vehs[$array_count]->description.' </p>';
-                echo'                <a href="" target="" class="btn btn-primary">More Information</a>';
-                echo'                <a href="rentconfirm.php?v='.$vehs[$array_count]->id.'" target="" class="btn btn-primary">Rent</a>';
+                echo'                <a href="" target="" class="btn btn-primary" onclick="window.alert(\''.$vehs[$array_count]->description.'\');">More Information</a>';
+                if(Session::try_get("CURRENT_USER")!=null)
+                {
+
+                    echo'                <a href="rentconfirm.php?v='.$vehs[$array_count]->id.'" target="" class="btn btn-primary">Rent</a>';
+                }
                 echo'            </div>';
                 echo'        </div>';
                 echo '    </div>';
@@ -322,20 +326,20 @@ class Graphics
         echo '                                <a class="nav-link active rk_link" href="index.php">Home</a>';
         echo '                            </li>';
         echo '                            <li class="nav-item">';
-        echo '                                <a class="nav-link active" href="index.php">Our services</a>';
+        echo '                                <a class="nav-link active" href="ourservices.php">Our services</a>';
         echo '                            </li>';
         echo '                            <li class="nav-item">';
         echo '                                <a class="nav-link active" href="rental.php">Rental</a>';
         echo '                            </li>';
         echo '                            <li class="nav-item">';
-        echo '                                <a class="nav-link active" href="index.php">About us</a>';
+        echo '                                <a class="nav-link active" href="aboutus.php">About us</a>';
         echo '                            </li>';
         echo '                            <li class="nav-item dropdown">';
         echo '                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Account</a>';
         echo '                                <ul class="dropdown-menu">';
         if ($li)
         {
-            
+            echo '                                    <li id="MENU_MYREQ"><a class="dropdown-item" href="myrequests.php">My Requests</a></li>';
             echo '                                    <li id="MENU_LOGOFF"><a class="dropdown-item" href="logoff.php">Log off</a></li>';
         }
         else
@@ -389,6 +393,96 @@ class Graphics
         }
         echo '</table>';
         echo '</form>';
+    }
+    public static function generateHTMLRequestReviewPanel(DataTable $dt,$table_attr="")
+    {
+        $res = "";
+        $res.= '<form id="FORM_RQRVW" action="" method="POST">';
+        $res.= '<table ' . $table_attr . '>';
+        $res.= '<tr><th>Request ID</th><th>User ID</th><th>User name</th><th>Vehicle ID</th><th>Manufacturer</th><th>Model</th><th>Start Date</th><th>End Date</th><th>Approved</th><th>Allow</th><th>Deny</th>';
+        $objrows = $dt->Rows;
+        foreach($objrows as $r)
+        {
+            $res.= '<tr><td>' . $r["ID"] . '</td><td>' . $r["USER_ID"] . '</td><td>' . $r["USER_NAME"] . '</td><td>' . $r["VEHICLE_ID"] . '</td><td>' . $r["MANUFACTURERNAME"] . '</td><td>' . $r["MODEL"] . '</td><td>' . $r["START_DATE"] . '</td><td>' . $r["END_DATE"] . '</td><td>' . $r["APPROVED"] . '</td><td><button type="submit" name="allow" value="' . $r["ID"] . '">Allow</button></td><td><button type="submit" name="deny" value="' . $r["ID"] . '">Deny</button></td></tr>';
+        }
+        $res.= '</table>';
+        $res.= '</form>';
+        return $res;
+    }
+    static function generateHTMLtablefromDT($dt,$attr="",$header_options=HeaderOptions::Default,$null_options=NullValues::Default,$customcolumns=null)
+    {
+        $objrows = $dt->Rows;
+        $acols = $dt->Columns;
+        $res = "";
+        $res.= "<table ".$attr.">";
+        if($header_options!=HeaderOptions::NoHeader && $header_options!=HeaderOptions::Default)
+        {
+            if($header_options==HeaderOptions::Header)
+            {
+                $res.= "<thead>";
+                $res.= "<tr>";
+                foreach($acols as $col)
+                {
+                    $res.= "<th>" . $col . "</th>";
+                }
+                $res.= "</tr>";
+                $res.= "</thead>";
+            }
+            else if($header_options==HeaderOptions::Custom)
+            {
+                if(count($customcolumns)!=count($acols))
+                {
+                    throw new Exception("Unable to create table! Different number of custom and predefined columns!");
+                }
+                else
+                {
+                $res.= "<thead>";
+                $res.= "<tr>";
+                foreach($customcolumns as $col)
+                {
+                    $res.= "<th>" . $col . "</th>";
+                }
+                $res.= "</tr>";
+                $res.= "</thead>";
+                }
+            }
+        }
+        $defaultnull="";
+        switch($null_options)
+        {
+            case NullValues::NullText:
+                $defaultnull = "NULL";
+                break;
+            case NullValues::NA:
+                $defaultnull = "N/A";
+                break;
+            case NullValues::NullTextSmall:
+                $defaultnull = "null";
+                break;
+            case NullValues::Blanks:
+                $defaultnull = " ";
+                break;
+        }
+        foreach($objrows as $obj)
+        {
+            $res.= "<tr>";
+            for($i=0;$i<count($acols);$i++)
+            {
+                $res.= "<td>";
+                $ob= $obj[$acols[$i]];
+                if($ob==null)
+                {
+                    $res.= $defaultnull;
+                }
+                else
+                {
+                    $res.= $ob;
+                }
+                $res.= "</td>";
+            }
+        }
+        $res.= "</table>";
+        return $res;
     }
 
 }
